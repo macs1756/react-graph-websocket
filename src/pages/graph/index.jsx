@@ -70,13 +70,15 @@ function Graph() {
   const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
 
   const data = {
-    labels,
+    labels: lineCrartArray, 
     datasets: [
       {
         label: 'Example 1',
         data: lineCrartArray,
         borderColor: '#eab40a',
+        fill: false,
         backgroundColor: '#eab40a',
+        borderWidth: 1
       },
     ],
   }
