@@ -1,23 +1,96 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { io } from 'socket.io-client';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+import faker from 'faker';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 function Graph() {
-  useEffect(() => {
-    
-    const socket = new WebSocket('http://localhost:80');
- 
-    socket.onclose = function(event) {
-      console.log('WebSocket connection closed');
-    };
-    
-    socket.onerror = function(error) {
-      console.error('WebSocket error:', error);
-    };
+  const [isConnected, setIsConnected] = useState(false);
+  const [lineCrartArray, setLineCrartArray] = useState([])
 
-   
-  }, []); 
+  useEffect(() => {
+    const newSocket = io('http://localhost:80');
+
+    newSocket.on('connect', () => {
+      setIsConnected(true);
+    });
+
+    newSocket.on('disconnect', () => {
+      setIsConnected(false);
+    });
+
+    newSocket.on('graph', data => {
+
+      if(data){
+        setLineCrartArray(prev => [...prev, data])
+      }
+     
+    });
+
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
+
+
+  const options = {
+    responsive: true,
+    plugins: {
+     
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: false,
+        text: 'Chart.js Line Chart',
+      },
+    },
+  };
+
+  const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+
+  const data = {
+    labels,
+    datasets: [
+      {
+        label: 'Example 1',
+        data: lineCrartArray,
+        borderColor: '#eab40a',
+        backgroundColor: '#eab40a',
+      },
+    ],
+  }
 
   return (
-    <div>Graph</div>
+    <div>
+      <p>Socket is connected: {isConnected ?
+        <div className='wr'>
+          <Line options={options} data={data} />
+        </div>
+
+
+        : 'Socket is connected: No'}</p>
+    </div>
   );
 }
 

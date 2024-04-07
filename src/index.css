@@ -11,3 +11,13 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+.wr {
+  max-width: 50%;
+  margin: 50px;
+}
+
+.wr canvas{
+  background-color: #181a20 !important;
+}
